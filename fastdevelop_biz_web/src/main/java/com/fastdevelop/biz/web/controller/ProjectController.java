@@ -7,25 +7,21 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fastdevelop.biz.web.util.UserUtil;
 import com.fastdevelop.common.res.JsonResult;
-import com.fastdevelop.convert.ProjectConvert;
 import com.fastdevelop.db.mapper.CategoryDOMapper;
 import com.fastdevelop.db.mapper.ChapterDOMapper;
 import com.fastdevelop.db.mapper.ProjectDOMapper;
 import com.fastdevelop.db.mapper.UserDOMapper;
-import com.fastdevelop.db.model.CategoryDO;
-import com.fastdevelop.db.model.ChapterDTO;
-import com.fastdevelop.db.model.ProjectDO;
-import com.fastdevelop.db.model.UserDO;
+import com.fastdevelop.db.model.*;
 import com.fastdevelop.dto.ProjectCreateDTO;
 import com.fastdevelop.dto.ProjectDTO;
 import com.fastdevelop.service.ChapterService;
 import com.fastdevelop.service.ProjectService;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
@@ -33,11 +29,15 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping("/project")
 public class ProjectController extends BaseController implements InitializingBean {
+
+    @Autowired
+    private ChapterDOMapper chapterDOMapper;
 
     @Autowired
     private ProjectService projectService;
@@ -88,11 +88,10 @@ public class ProjectController extends BaseController implements InitializingBea
         if (ObjectUtil.isEmpty(pageNum) || pageNum < 0) {
             pageNum = 0;
         }
-        if (ObjectUtil.isEmpty(pageSize) || pageSize < 0)
-        {
+        if (ObjectUtil.isEmpty(pageSize) || pageSize < 0) {
             pageSize = 10;
         }
-        List<ProjectDTO> projectDTOList = projectService.listProjects(pageNum,pageSize);
+        List<ProjectDTO> projectDTOList = projectService.listProjects(pageNum, pageSize);
         if (CollectionUtil.isNotEmpty(projectDTOList)) {
             for (ProjectDTO projectDTO : projectDTOList) {
                 Long userId = projectDTO.getUserId();
@@ -181,10 +180,10 @@ public class ProjectController extends BaseController implements InitializingBea
         String pathDir = null;
         if (StringUtils.isNotEmpty(projectType) && "1".equalsIgnoreCase(projectType)) {
             pathDir = blogDetailMdPath;
-        }else  if (StringUtils.isNotEmpty(projectType) && "2".equalsIgnoreCase(projectType)) {
+        } else if (StringUtils.isNotEmpty(projectType) && "2".equalsIgnoreCase(projectType)) {
             //专栏详情md
             pathDir = albumDetailMdPath;
-        }else  if (StringUtils.isNotEmpty(projectType) && "3".equalsIgnoreCase(projectType)) {
+        } else if (StringUtils.isNotEmpty(projectType) && "3".equalsIgnoreCase(projectType)) {
             //专栏章节
             pathDir = chapterMdPath;
         }
@@ -207,14 +206,17 @@ public class ProjectController extends BaseController implements InitializingBea
 
     @GetMapping("/blogContentGet")
     public JsonResult<String> blogContentGet(String projectId, String projectType) {
+        if (StringUtils.isEmpty(projectId) || StringUtils.isEmpty(projectType)) {
+            return JsonResult.<String>builder().failure("projectId 或者 projectType 非法").build();
+        }
         //博客
         String pathDir = null;
         if (StringUtils.isNotEmpty(projectType) && "1".equalsIgnoreCase(projectType)) {
             pathDir = blogDetailMdPath;
-        }else  if (StringUtils.isNotEmpty(projectType) && "2".equalsIgnoreCase(projectType)) {
+        } else if (StringUtils.isNotEmpty(projectType) && "2".equalsIgnoreCase(projectType)) {
             //专栏详情md
             pathDir = albumDetailMdPath;
-        }else  if (StringUtils.isNotEmpty(projectType) && "3".equalsIgnoreCase(projectType)) {
+        } else if (StringUtils.isNotEmpty(projectType) && "3".equalsIgnoreCase(projectType)) {
             //专栏章节
             pathDir = chapterMdPath;
         }

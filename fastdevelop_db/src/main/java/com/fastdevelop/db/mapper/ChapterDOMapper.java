@@ -21,4 +21,8 @@ public interface ChapterDOMapper {
     int updateByExample(@Param("record") ChapterDO record, @Param("example") ChapterDOExample example);
 
     List<ChapterDTO> selectTree(String projectId);
+
+    int deleteById(@Param("id")String id);
+
+
 }

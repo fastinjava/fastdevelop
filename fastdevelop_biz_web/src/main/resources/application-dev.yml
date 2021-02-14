@@ -23,7 +23,11 @@ fastdevelop:
     chapterMdPath: C:\Users\admin\Desktop\kelin\projects\albumMdPath\chapterMdPath\
 
 
-
+MyRedisUtil:
+  enabld: false
+  host: localhost
+  passwd: Yhrh#2020
+  port: 6379
 #mybatis:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -16,6 +16,9 @@
         <module>fastdevelop_utils</module>
         <module>fastdevelop_api</module>
         <module>fastdevelop_biz_web</module>
+        <module>threadpool-spring-boot-starter</module>
+        <module>myredis-spring-boot-starter</module>
+        <module>fastdevelop-demo-learn</module>
     </modules>
 
     <repositories>

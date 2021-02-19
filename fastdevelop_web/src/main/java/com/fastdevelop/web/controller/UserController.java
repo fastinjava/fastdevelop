@@ -89,38 +89,33 @@ public class UserController extends BaseController {
             return JsonResult.<String>builder().failure("用户不存在").build();
         }
 
-        String encryPassword = userDTO.getPassword();
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
-        boolean matches = bCryptPasswordEncoder.matches(password, encryPassword);
-
-        if (!matches) {
-            return JsonResult.<String>builder().failure("密码错误").build();
-        }
-
-        //链式构建请求
-        Map<String, Object> paramMap = Maps.newHashMap();
-        paramMap.put("grant_type","password");
-        paramMap.put("username",username);
-        paramMap.put("password",password);
-        String url = "http://localhost:10010/fastdevelop/oauth/token";
-        String body = HttpRequest.post(url)
-                .header("Authorization", httpbasic(clientId,clientSecret))//头信息，多个头信息多次调用此方法即可
-                .form(paramMap)//表单内容
-                .timeout(20000)//超时，毫秒
-                .execute().body();
-        JSONObject jsonObject = JSONUtil.parseObj(body);
-        String access_token = jsonObject.getStr("access_token");
-        String refresh_token = jsonObject.getStr("refresh_token");
-        String jti = jsonObject.getStr("jti");
-        if (StringUtils.isEmpty(access_token)
-                ||  StringUtils.isEmpty(refresh_token)
-                || StringUtils.isEmpty(jti)) {
+        com.alibaba.fastjson.JSONObject jsonObj = new com.alibaba.fastjson.JSONObject();
+        jsonObj.fluentPut("grant_type","password")
+                .fluentPut("username",username)
+                .fluentPut("password",password)
+        ;
+        try {
+            String body = HttpRequest.post("http://localhost:10001/fastdevelop/oauth/token")
+                    .header("Authorization", httpbasic(clientId,clientSecret))//头信息，多个头信息多次调用此方法即可
+                    .form(jsonObj)//表单内容
+                    .timeout(20000)//超时，毫秒
+                    .execute().body();
+            JSONObject jsonObject = JSONUtil.parseObj(body);
+            String access_token = jsonObject.getStr("access_token");
+            String refresh_token = jsonObject.getStr("refresh_token");
+            String jti = jsonObject.getStr("jti");
+            if (StringUtils.isEmpty(access_token)
+                    ||  StringUtils.isEmpty(refresh_token)
+                    || StringUtils.isEmpty(jti)) {
+                return JsonResult.<String>builder().failure("登录失败").build();
+            }
+            saveCookie(jti);
+            return JsonResult.<String>builder().success(access_token).build();
+        } catch (Exception e) {
             return JsonResult.<String>builder().failure("登录失败").build();
+        }finally {
+
         }
-        saveCookie(jti);
-//        redisTemplate.boundValueOps("user_token:" + jti).set(JSONUtil.toJsonStr(jsonObject), tokenValiditySeconds, TimeUnit.SECONDS);
-        return JsonResult.<String>builder().success(access_token).build();
     }
 
 

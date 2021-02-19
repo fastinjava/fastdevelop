@@ -54,19 +54,25 @@ public class ProjectController extends BaseController implements InitializingBea
     @Autowired
     private ChapterService chapterService;
 
-    @Value("${fastdevelop.blog.detailMdPath}")
+//    @Value("${fastdevelop.blog.detailMdPath}")
     private String blogDetailMdPath;
 
-    @Value("${fastdevelop.album.detailMdPath}")
+//    @Value("${fastdevelop.album.detailMdPath}")
     private String albumDetailMdPath;
 
-    @Value("${fastdevelop.album.chapterMdPath}")
+//    @Value("${fastdevelop.album.chapterMdPath}")
     private String chapterMdPath;
 
     private Map<String, String> projectTypeMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
+
+
+        this.blogDetailMdPath = System.getProperty("user.dir") + "\\documents\\blogMdPath\\";
+        this.albumDetailMdPath = System.getProperty("user.dir") + "\\documents\\albumMdPath\\";
+        this.chapterMdPath = System.getProperty("user.dir") + "\\documents\\albumMdPath\\chapterMdPath\\";
+
         projectTypeMap.put("1", "博客");
         projectTypeMap.put("2", "专栏");
         projectTypeMap.put("3", "问答");
@@ -83,6 +89,8 @@ public class ProjectController extends BaseController implements InitializingBea
 
     @PostMapping("/listProjects")
     public JsonResult<List<ProjectDTO>> projectDTOList(@RequestBody JSONObject jsonObject) {
+
+
         Integer pageNum = jsonObject.getInteger("pageNum");
         Integer pageSize = jsonObject.getInteger("pageSize");
         if (ObjectUtil.isEmpty(pageNum) || pageNum < 0) {

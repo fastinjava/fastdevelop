@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -32,11 +33,19 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         AuthenticationManager manager = super.authenticationManagerBean();
         return manager;
     }
+//
+//    //采用bcrypt对密码进行编码
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+////        return new MyPassEncoder();
+//    }
 
-    //采用bcrypt对密码进行编码
+
+    //对密码不进行加密处理
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    PasswordEncoder passwordEncoder(){
+        return NoOpPasswordEncoder.getInstance();
     }
 
     @Override

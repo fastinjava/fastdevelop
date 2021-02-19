@@ -92,23 +92,22 @@ public class ProjectController extends BaseController implements InitializingBea
             pageSize = 10;
         }
         List<ProjectDTO> projectDTOList = projectService.listProjects(pageNum, pageSize);
-        if (CollectionUtil.isNotEmpty(projectDTOList)) {
-            for (ProjectDTO projectDTO : projectDTOList) {
-                Long userId = projectDTO.getUserId();
-                String projectType = projectDTO.getProjectType();
-                if (userId != null) {
-                    UserDO userDO = userDOMapper.selectByPrimaryKey(userId);
-                    projectDTO.setUsername(userDO.getUsername());
-                }
-                if (StringUtils.isNotEmpty(projectType)) {
-                    projectDTO.setProjectTypeName(projectTypeMap.get(projectType));
-                }
-                String categoryId = projectDTO.getCategoryId();
-                if (categoryId != null) {
-                    CategoryDO categoryDO = categoryDOMapper.selectByPrimaryKey(categoryId);
-                    if (ObjectUtil.isNotEmpty(categoryDO)) {
-                        projectDTO.setCategoryName(categoryDO.getName());
-                    }
+        org.springframework.util.Assert.isTrue(CollectionUtil.isNotEmpty(projectDTOList));
+        for (ProjectDTO projectDTO : projectDTOList) {
+            Long userId = projectDTO.getUserId();
+            String projectType = projectDTO.getProjectType();
+            if (userId != null) {
+                UserDO userDO = userDOMapper.selectByPrimaryKey(userId);
+                projectDTO.setUsername(userDO.getUsername());
+            }
+            if (StringUtils.isNotEmpty(projectType)) {
+                projectDTO.setProjectTypeName(projectTypeMap.get(projectType));
+            }
+            String categoryId = projectDTO.getCategoryId();
+            if (categoryId != null) {
+                CategoryDO categoryDO = categoryDOMapper.selectByPrimaryKey(categoryId);
+                if (ObjectUtil.isNotEmpty(categoryDO)) {
+                    projectDTO.setCategoryName(categoryDO.getName());
                 }
             }
         }
